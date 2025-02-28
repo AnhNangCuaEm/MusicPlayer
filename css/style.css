@@ -1,0 +1,49 @@
+body {
+    background-color: #f0f0f0; /* Light background for the iPhone interface */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+.container {
+    width: 375px; /* iPhone width */
+    height: 667px; /* iPhone height */
+    background-color: white; /* White background for the music player */
+    border-radius: 30px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.album-cover {
+    width: 100%;
+    height: auto;
+    border-radius: 15px; /* Rounded corners for album cover */
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around; /* Space between buttons */
+    margin-top: 20px;
+}
+
+.button {
+    background-color: #1db954; /* Green color for buttons */
+    color: white; /* White text */
+    border: none;
+    border-radius: 50%; /* Circular buttons */
+    width: 60px; /* Button width */
+    height: 60px; /* Button height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+.button:hover {
+    background-color: #1aa34a; /* Darker green on hover */
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="bg-white rounded-lg shadow-lg w-80 h-96 flex flex-col items-center justify-between p-4">
+        <img src="./images/album-cover.jpg" alt="Album Cover" class="w-48 h-48 rounded-lg mb-4">
+        <h2 class="text-xl font-semibold">Song Title</h2>
+        <h3 class="text-gray-600">Artist Name</h3>
+        <div class="flex space-x-4 mt-4">
+            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="prevBtn">Prev</button>
+            <button class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600" id="playPauseBtn">Play</button>
+            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="nextBtn">Next</button>
+        </div>
+        <div class="flex space-x-4 mt-4">
+            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="shuffleBtn">Shuffle</button>
+            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="loopBtn">Loop</button>
+        </div>
+    </div>
+    <script src="./js/index.js"></script>
+</body>
+</html>
