@@ -1,0 +1,16 @@
+{
+    "Lyrics": [
+        {
+            "1.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        }
+    ]
+}

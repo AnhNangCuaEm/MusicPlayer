@@ -1,27 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Player</title>
+    <title>Apple Music Player</title>
     <link rel="stylesheet" href="./css/style.css">
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-100">
-    <div class="bg-white rounded-lg shadow-lg w-80 h-96 flex flex-col items-center justify-between p-4">
-        <img src="./images/album-cover.jpg" alt="Album Cover" class="w-48 h-48 rounded-lg mb-4">
-        <h2 class="text-xl font-semibold">Song Title</h2>
-        <h3 class="text-gray-600">Artist Name</h3>
-        <div class="flex space-x-4 mt-4">
-            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="prevBtn">Prev</button>
-            <button class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600" id="playPauseBtn">Play</button>
-            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="nextBtn">Next</button>
+
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="player-container">
+            <div class="header">
+                <button class="minimize-btn">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="more-btn">
+                    <i class="fas fa-ellipsis"></i>
+                </button>
+            </div>
+
+            <div class="album-art">
+                <img src="./images/album-cover.jpg" alt="Album Cover">
+            </div>
+
+            <div class="track-info">
+                <h2 class="song-title">Song Title</h2>
+                <p class="artist-name">Artist Name</p>
+            </div>
+
+            <div class="progress-bar">
+                <input id="progress-slider" type="range" class="progress-slider" min="0" max="100" value="0" step="1">
+                <span class="current-time">0:00</span>
+                <span class="total-time">3:30</span>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" id="shuffleBtn">
+                    <i class="fas fa-random"></i>
+                </button>
+                <button class="control-btn" id="prevBtn">
+                    <i class="fas fa-backward"></i>
+                </button>
+                <button class="control-btn play-btn" id="playPauseBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="control-btn" id="nextBtn">
+                    <i class="fas fa-forward"></i>
+                </button>
+                <button class="control-btn" id="loopBtn">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+
+            <button class="playlist-btn">
+                <i class="fas fa-list"></i>
+                Up Next
+            </button>
+
+            <audio id="audio" preload="metadata"></audio>
         </div>
-        <div class="flex space-x-4 mt-4">
-            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="shuffleBtn">Shuffle</button>
-            <button class="bg-gray-200 p-2 rounded-full hover:bg-gray-300" id="loopBtn">Loop</button>
+
+        <div class="playlist-panel">
+            <div class="playlist-header">
+                <h3>Up Next</h3>
+                <button class="close-playlist">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <ul class="song-list">
+                <li class="song-item">
+                    <img src="./images/album-cover.jpg" alt="Song 1">
+                    <div class="song-info">
+                        <span class="song-name">Song 1</span>
+                        <span class="song-artist">Artist 1</span>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
+    <script>
+        document.querySelector('.playlist-btn').addEventListener('click', () => {
+            document.querySelector('.playlist-panel').classList.add('active');
+        });
+
+        document.querySelector('.close-playlist').addEventListener('click', () => {
+            document.querySelector('.playlist-panel').classList.remove('active');
+        });
+    </script>
     <script src="./js/index.js"></script>
 </body>
+
 </html>
