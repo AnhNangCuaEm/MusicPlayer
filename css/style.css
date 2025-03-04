@@ -245,10 +245,6 @@ body {
   background-color: #ffffff44;
 }
 
-.control-btn:not(.active):hover {
-  background-color: #ffffff22;
-}
-
 .control-btn.active {
   background-color: #ffffff44;
 }
@@ -341,9 +337,6 @@ body {
   background-color: #ffffff44;
 }
 
-.close-playlist:not(.active):hover {
-  background-color: #ffffff22;
-}
 
 .song-list {
   height: fit-content;
