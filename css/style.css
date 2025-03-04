@@ -39,7 +39,7 @@ body {
   background-color: #000;
   border-radius: 50px;
   overflow: hidden;
-  box-shadow: 0 0 0 2px #333;
+  box-shadow: 0 0 0 3px #333;
   transition: background 0.8s ease-in-out;
 }
 
@@ -122,86 +122,46 @@ body {
   color: #999;
 }
 
-/* Progress bar container */
 .progress-bar {
   position: relative;
   margin: 10px 0;
-  padding: 10px 0; /* Tăng padding để dễ click hơn */
+  padding: 10px 0;
 }
 
-/* Progress slider base styling */
-.progress-slider {
-  -webkit-appearance: none;
-  appearance: none;
+.progress-slider{
+  position: relative;
   width: 100%;
-  height: 3px; /* Giảm độ dày mặc định để trông tối giản hơn */
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
-  margin: 0;
+  height: 5px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-/* Thumb styling */
-.progress-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 0; /* Ẩn thumb mặc định */
-  height: 0;
-  background: #fff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.volume-bar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  align-items: center;
 }
 
-.progress-slider::-moz-range-thumb {
-  width: 0; /* Ẩn thumb mặc định */
-  height: 0;
-  background: #fff;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+#volumeSlider {
+  height: 5px;
+  width: 100%;
 }
 
-/* Hover effects */
-.progress-slider:hover {
-  height: 5px; /* Tăng độ dày khi hover */
+.volume-bar i {
+  transition: 0.3s ease;
 }
 
-.progress-slider:hover::-webkit-slider-thumb {
-  width: 12px; /* Hiện thumb khi hover */
-  height: 12px;
-}
-
-.progress-slider:hover::-moz-range-thumb {
-  width: 12px; /* Hiện thumb khi hover */
-  height: 12px;
-}
-
-/* Track styling */
-.progress-slider::-webkit-slider-runnable-track {
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0.8) var(--progress-percent, 0%),
-    /* Phần đã phát - màu sáng hơn */ rgba(255, 255, 255, 0.1)
-      var(--progress-percent, 0%) /* Phần chưa phát - tối hơn */
-  );
-  border-radius: 2px;
-  height: 100%;
-  transition: background 0.2s ease;
-}
-
-.progress-slider::-moz-range-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  height: 100%;
-}
-
-.progress-slider::-moz-range-progress {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
-  height: 100%;
+@keyframes iconScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Time indicators */
@@ -278,7 +238,7 @@ body {
   position: relative;
   width: 120px;
   height: 5px;
-  top: 150px;
+  top: 110px;
   margin: auto;
   background: rgba(255, 255, 255, 0.738);
   border: none;
@@ -301,7 +261,7 @@ body {
   left: 0;
   width: 100%;
   height: 70%;
-  background: #000000f0;
+  background: #000000ee;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   transform: translateY(100%);
@@ -342,7 +302,7 @@ body {
   height: fit-content;
   overflow-y: scroll;
   list-style: none;
-  padding: 20px;
+  padding: 20px 20px 10px 20px;
 }
 
 .song-item {
@@ -354,7 +314,7 @@ body {
 }
 
 .song-item.active {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.271);
   border-radius: 8px;
 }
 

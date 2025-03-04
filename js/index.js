@@ -13,6 +13,7 @@ const prevBtn = $("#prevBtn");
 const shuffleBtn = $("#shuffleBtn");
 const loopBtn = $("#loopBtn");
 const phoneContainer = $(".phone-container"); // Changed to phone-container
+const volumeSlider = $("#volumeSlider"); // Add volume slider reference
 
 const app = {
   currentIndex: 0,
@@ -240,6 +241,45 @@ const app = {
       playerBtn.classList.remove("fa-play");
       playerBtn.classList.add("fa-pause");
     };
+    volumeSlider.onchange = (e) => {
+      audio.volume = e.target.value / 100;
+      this.updateVolumeIcon(e.target.value);
+    };
+    volumeSlider.oninput = (e) => {
+      audio.volume = e.target.value / 100;
+      this.updateVolumeIcon(e.target.value);
+    };
+  },
+  
+  updateVolumeIcon: function(volumeLevel) {
+    const volumeLowIcon = $(".volume-bar i:first-child");
+    const volumeHighIcon = $(".volume-bar .fa-volume-high");
+    
+    if (volumeLevel == 0) {
+      volumeLowIcon.className = "fas fa-volume-off";
+      volumeHighIcon.style.opacity = "0.5";
+      volumeLowIcon.style.animation = "iconScale 0.5s forwards";
+      setTimeout(() => {
+        volumeLowIcon.style.animation = "";
+      }, 500);
+    } else if (volumeLevel <= 50) {
+      volumeLowIcon.className = "fas fa-volume-low";
+      volumeHighIcon.style.opacity = "0.5";
+      volumeLowIcon.style.animation = "";
+      volumeHighIcon.style.animation = "";
+    } else {
+      volumeLowIcon.className = "fas fa-volume-low";
+      volumeHighIcon.style.opacity = "1";
+      // Clear any animation unless at 100%
+      volumeLowIcon.style.animation = "";
+    }
+
+    if (volumeLevel == 100) {
+      volumeHighIcon.style.animation = "iconScale 0.5s forwards";
+      setTimeout(() => {
+        volumeHighIcon.style.animation = "";
+      }, 500);
+    }
   },
 
   applyColorPalette: function() {
@@ -265,7 +305,7 @@ const app = {
         const darkColor = `rgba(128, 128, 128, 0.9)`;
         
         // Apply the gradient to phone-container instead of player-container
-        phoneContainer.style.background = `linear-gradient(to bottom, ${color1}, ${darkColor})`;
+        phoneContainer.style.background = `linear-gradient(120deg, ${color1}, ${darkColor})`;
         
         // Add a transition effect
         phoneContainer.style.transition = "background 0.8s ease";
@@ -284,8 +324,6 @@ const app = {
     artistName.textContent = song.artist;
     albumArt.src = song.image;
     audio.src = song.path;
-    
-    // Apply color palette after loading the new song
     this.applyColorPalette();
   },
   nextSong: function () {
@@ -326,6 +364,8 @@ const app = {
     this.loadCurrentSong();
     this.render();
     this.highlightActiveSong();
+    audio.volume = volumeSlider.value / 100;
+    this.updateVolumeIcon(volumeSlider.value);
   },
 };
 
