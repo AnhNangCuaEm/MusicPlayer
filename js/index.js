@@ -8,9 +8,17 @@ const audio = $("#audio");
 const playBtn = $("#playPauseBtn");
 const playerBtn = $("#playPauseBtn i");
 const progressBar = $("#progress-slider");
+const nextBtn = $("#nextBtn");
+const prevBtn = $("#prevBtn");
+const shuffleBtn = $("#shuffleBtn");
+const loopBtn = $("#loopBtn");
 
 const app = {
   currentIndex: 0,
+  isPlaying: false,
+  isRandom: false,
+  isRepeat: false,
+  randomOrder: [],
   songs: [
     {
       name: "Despacito ft. Justin Bieber",
@@ -73,19 +81,92 @@ const app = {
       image: "../assets/images/10.jpg",
     },
   ],
+  shuffleSongs: function() {
+    // Lưu lại index thật của bài hát đang phát trong mảng songs gốc
+    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
+    
+    // Tạo mảng chỉ số cho tất cả bài hát
+    this.randomOrder = Array.from({ length: this.songs.length }, (_, i) => i);
+    
+    // Thuật toán Fisher-Yates để trộn mảng
+    for (let i = this.randomOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.randomOrder[i], this.randomOrder[j]] = [this.randomOrder[j], this.randomOrder[i]];
+    }
+    
+    // Tìm vị trí mới của bài hát đang phát trong mảng ngẫu nhiên
+    this.currentIndex = this.randomOrder.findIndex(index => index === currentSongRealIndex);
+    
+    // Render lại danh sách bài hát theo thứ tự ngẫu nhiên
+    this.render();
+    this.highlightActiveSong();
+  },
+
   render: function () {
-    const htmls = this.songs.map((song) => {
+    // Lấy danh sách bài hát cần hiển thị dựa vào chế độ
+    let songsToRender = this.isRandom 
+      ? this.randomOrder.map(index => ({...this.songs[index], originalIndex: index}))
+      : this.songs.map((song, index) => ({...song, originalIndex: index}));
+    
+    // Lấy index thật của bài hát đang phát trong mảng songs gốc
+    
+    const htmls = songsToRender.map((song, index) => {
+      // Trong chế độ random, chúng ta cần xác định index thật của bài hát
+      const originalIndex = this.isRandom ? this.randomOrder[index] : index;
+      
+      // Kiểm tra xem đây có phải là bài hát đang phát hay không
+      let isActive = false;
+      if (this.isRandom) {
+        isActive = this.randomOrder[this.currentIndex] === originalIndex;
+      } else {
+        isActive = index === this.currentIndex;
+      }
+        
       return `                
-      <li class="song-item">
+      <li class="song-item ${isActive ? "active" : ""}" data-index="${originalIndex}">
         <img src="${song.image}" alt="${song.name}">
         <div class="song-info">
             <span class="song-name">${song.name}</span>
             <span class="song-artist">${song.artist}</span>
         </div>
-    </li>`;
+      </li>`;
     });
     $(".song-list").innerHTML = htmls.join("\n");
+
+    const songItems = $$(".song-item");
+    songItems.forEach((item) => {
+      item.onclick = () => {
+        const songIndex = Number(item.dataset.index);
+        if (this.isRandom) {
+          this.currentIndex = this.randomOrder.findIndex(index => index === songIndex);
+        } else {
+          this.currentIndex = songIndex;
+        }
+        this.loadCurrentSong();
+        audio.play();
+        playerBtn.classList.remove("fa-play");
+        playerBtn.classList.add("fa-pause");
+        this.highlightActiveSong();
+      };
+    });
   },
+
+  highlightActiveSong: function () {
+    const songItems = $$(".song-item");
+    songItems.forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    // Lấy index thật của bài hát đang phát trong mảng songs gốc
+    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
+    
+    // Tìm và add active class cho bài hát đang phát trong danh sách hiển thị
+    const activeSong = $(`.song-item[data-index="${currentSongRealIndex}"]`);
+    if (activeSong) {
+      activeSong.classList.add("active");
+    }
+  },
+
   defineProperties: function () {
     Object.defineProperty(this, "currentSong", {
       get: function () {
@@ -113,23 +194,99 @@ const app = {
       }
     };
     progressBar.onchange = (e) => {
-        const seekTime = (audio.duration / 100) * e.target.value;
-        audio.currentTime = seekTime;
-        }
+      const seekTime = (audio.duration / 100) * e.target.value;
+      audio.currentTime = seekTime;
+    };
+    nextBtn.onclick = () => {
+      this.nextSong();
+      audio.play();
+      playerBtn.classList.remove("fa-play");
+      playerBtn.classList.add("fa-pause");
+    };
+    prevBtn.onclick = () => {
+      this.prevSong();
+      audio.play();
+      playerBtn.classList.remove("fa-play");
+      playerBtn.classList.add("fa-pause");
+    };
+    shuffleBtn.onclick = () => {
+      this.isRandom = !this.isRandom;
+      shuffleBtn.classList.toggle("active");
+      
+      if (this.isRandom) {
+        // When enabling shuffle, preserve the current playing song
+        this.shuffleSongs();
+      } else {
+        // When disabling shuffle, get the real index of the currently playing song
+        const currentPlayingSongIndex = this.randomOrder[this.currentIndex];
+        // Reset to normal mode, setting the current index to match the song that was playing
+        this.currentIndex = currentPlayingSongIndex;
+        this.render();
+        this.highlightActiveSong();
+      }
+    };
+    loopBtn.onclick = () => {
+      loopBtn.classList.toggle("active");
+      this.isRepeat = !this.isRepeat;
+    };
+    audio.onended = () => {
+      if (this.isRepeat) {
+        audio.play();
+      } else {
+        this.nextSong();
+        audio.play();
+      }
+      playerBtn.classList.remove("fa-play");
+      playerBtn.classList.add("fa-pause");
+    };
   },
 
   loadCurrentSong: function () {
-    songTitle.textContent = this.currentSong.name;
-    artistName.textContent = this.currentSong.artist;
-    albumArt.src = this.currentSong.image;
-    audio.src = this.currentSong.path;
+    const songIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
+    const song = this.songs[songIndex];
+    songTitle.textContent = song.name;
+    artistName.textContent = song.artist;
+    albumArt.src = song.image;
+    audio.src = song.path;
   },
-
+  nextSong: function () {
+    this.currentIndex++;
+    if (this.isRandom) {
+      // Nếu ở chế độ ngẫu nhiên, reset về đầu danh sách random
+      if (this.currentIndex >= this.randomOrder.length) {
+        this.currentIndex = 0;
+      }
+    } else {
+      // Chế độ bình thường
+      if (this.currentIndex >= this.songs.length) {
+        this.currentIndex = 0;
+      }
+    }
+    this.loadCurrentSong();
+    this.highlightActiveSong();
+  },
+  prevSong: function () {
+    this.currentIndex--;
+    if (this.isRandom) {
+      // Nếu ở chế độ ngẫu nhiên, quay lại cuối danh sách random
+      if (this.currentIndex < 0) {
+        this.currentIndex = this.randomOrder.length - 1;
+      }
+    } else {
+      // Chế độ bình thường
+      if (this.currentIndex < 0) {
+        this.currentIndex = this.songs.length - 1;
+      }
+    }
+    this.loadCurrentSong();
+    this.highlightActiveSong();
+  },
   start: function () {
     this.defineProperties();
     this.handleEvents();
     this.loadCurrentSong();
     this.render();
+    this.highlightActiveSong();
   },
 };
 
