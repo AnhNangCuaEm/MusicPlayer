@@ -12,6 +12,7 @@ const nextBtn = $("#nextBtn");
 const prevBtn = $("#prevBtn");
 const shuffleBtn = $("#shuffleBtn");
 const loopBtn = $("#loopBtn");
+const phoneContainer = $(".phone-container"); // Changed to phone-container
 
 const app = {
   currentIndex: 0,
@@ -241,6 +242,41 @@ const app = {
     };
   },
 
+  applyColorPalette: function() {
+    // Make sure the image is loaded before trying to get colors
+    if (!albumArt.complete) {
+      albumArt.onload = () => this.extractAndApplyColors();
+      return;
+    }
+    
+    this.extractAndApplyColors();
+  },
+  
+  extractAndApplyColors: function() {
+    const colorThief = new ColorThief();
+    try {
+      // Get color palette (returns an array of [r,g,b] colors)
+      const palette = colorThief.getPalette(albumArt, 3);
+      
+      if (palette && palette.length >= 2) {
+        // Convert RGB arrays to CSS format
+        const color1 = `rgb(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]})`;
+        const color2 = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
+        const darkColor = `rgba(128, 128, 128, 0.9)`;
+        
+        // Apply the gradient to phone-container instead of player-container
+        phoneContainer.style.background = `linear-gradient(to bottom, ${color1}, ${darkColor})`;
+        
+        // Add a transition effect
+        phoneContainer.style.transition = "background 0.8s ease";
+      }
+    } catch (error) {
+      console.error("Error extracting colors:", error);
+      // Fallback to default background
+      phoneContainer.style.background = "#000";
+    }
+  },
+
   loadCurrentSong: function () {
     const songIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
     const song = this.songs[songIndex];
@@ -248,6 +284,9 @@ const app = {
     artistName.textContent = song.artist;
     albumArt.src = song.image;
     audio.src = song.path;
+    
+    // Apply color palette after loading the new song
+    this.applyColorPalette();
   },
   nextSong: function () {
     this.currentIndex++;
