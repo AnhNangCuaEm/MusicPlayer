@@ -103,10 +103,10 @@ body {
   justify-content: space-between;
   margin-bottom: 30px;
   margin-top: 8px;
-  padding: 0 5px;
+  padding: 0 10px;
 }
 
-.minimize-btn,
+.share-btn,
 .more-btn {
   background: none;
   border: none;
@@ -116,7 +116,7 @@ body {
   transition: 0.3s ease-out;
 }
 
-.minimize-btn:active,
+.share-btn:active,
 .more-btn:active {
   transform: scale(0.8);
 }
@@ -227,7 +227,7 @@ body {
 
 .control-btn {
   background: none;
-  padding: 8px;
+  padding: 8px 9px;
   border-radius: 50%;
   border: none;
   color: #fff;
@@ -424,5 +424,14 @@ body {
   .phone-container {
     width: 360px;
     height: 100%;
+  }
+
+  .album-art {
+    width: 280px;
+    height: 280px;
+  }
+
+  .notch {
+    width: 100px;
   }
 }

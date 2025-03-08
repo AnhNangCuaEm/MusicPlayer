@@ -57,8 +57,8 @@
         </div>
         <div class="player-container">
             <div class="header">
-                <button class="minimize-btn">
-                    <i class="fas fa-chevron-down"></i>
+                <button class="share-btn">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
                 </button>
                 <button class="more-btn">
                     <i class="fas fa-ellipsis"></i>
@@ -149,6 +149,19 @@
         </div>
     </div>
     <script>
+        document.querySelector('.share-btn').addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Music Player',
+                    text: 'Check out this music player!',
+                    url: 'https://anhnangcuaem.github.io/MusicPlayer/'
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(console.error);
+            } else {
+                alert('Web Share API is not supported in your browser.');
+            }
+        });
         document.querySelector('.more-btn').addEventListener('click', () => {
             document.querySelector('.credit-container').classList.toggle('active');
         });

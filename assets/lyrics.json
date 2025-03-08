@@ -1,0 +1,124 @@
+{
+    "Lyrics": [
+        {
+            "1.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "2.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "3.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "4.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "5.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "6.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "7.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "8.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "9.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        },
+        {
+            "10.mp3": [
+                {
+                    "time": 10,
+                    "text": "Dòng đầu tiên"
+                },
+                {
+                    "time": 15,
+                    "text": "Dòng tiếp theo"
+                }
+            ]
+        }
+    ]
+}
