@@ -153,6 +153,18 @@ const app = {
     });
   },
 
+
+  //update playpause icon
+  updatePlayBtnIcon: function () {
+    if (audio.paused) {
+      playerBtn.classList.remove("fa-pause");
+      playerBtn.classList.add("fa-play");
+    } else {
+      playerBtn.classList.remove("fa-play");
+      playerBtn.classList.add("fa-pause");
+    }
+  },
+
   highlightActiveSong: function () {
     const songItems = $$(".song-item");
     songItems.forEach((item) => {
@@ -176,8 +188,23 @@ const app = {
       },
     });
   },
-
   handleEvents: function () {
+    audio.addEventListener("play", function () {
+      playBtn.classList.remove("play");
+      playBtn.classList.add("pause");
+    });
+    audio.addEventListener("pause", function () {
+      playBtn.classList.remove("pause");
+      playBtn.classList.add("play");
+    });
+    audio.addEventListener("play", function () {
+      playerBtn.classList.remove("fa-play");
+      playerBtn.classList.add("fa-pause");
+    });
+    audio.addEventListener("pause", function () {
+      playerBtn.classList.remove("fa-pause");
+      playerBtn.classList.add("fa-play");
+    });
     playBtn.onclick = () => {
       if (audio.paused) {
         audio.play();
@@ -325,6 +352,34 @@ const app = {
     albumArt.src = song.image;
     audio.src = song.path;
     this.applyColorPalette();
+    
+    // Add Media Session API support for OS media controls
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.name,
+        artist: song.artist,
+        album: 'Music Player',
+        artwork: [
+          { src: song.image, sizes: '512x512', type: 'image/jpeg' }
+        ]
+      });
+      
+      // Add media session action handlers
+      navigator.mediaSession.setActionHandler('play', () => {
+        audio.play();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        audio.pause();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        this.prevSong();
+        audio.play();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        this.nextSong();
+        audio.play();
+      });
+    }
   },
   nextSong: function () {
     this.currentIndex++;
