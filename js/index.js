@@ -4,6 +4,7 @@ const $$ = document.querySelectorAll.bind(document);
 const songTitle = $(".track-info h2");
 const artistName = $(".track-info p");
 const albumArt = $(".album-art img");
+const artCover = $(".album-art");
 const audio = $("#audio");
 const playBtn = $("#playPauseBtn");
 const playerBtn = $("#playPauseBtn i");
@@ -12,8 +13,8 @@ const nextBtn = $("#nextBtn");
 const prevBtn = $("#prevBtn");
 const shuffleBtn = $("#shuffleBtn");
 const loopBtn = $("#loopBtn");
-const phoneContainer = $(".phone-container"); // Changed to phone-container
-const volumeSlider = $("#volumeSlider"); // Add volume slider reference
+const phoneContainer = $(".phone-container");
+const volumeSlider = $("#volumeSlider");
 
 const app = {
   currentIndex: 0,
@@ -105,25 +106,31 @@ const app = {
   },
 
   render: function () {
-    // Lấy danh sách bài hát cần hiển thị dựa vào chế độ
-    let songsToRender = this.isRandom 
-      ? this.randomOrder.map(index => ({...this.songs[index], originalIndex: index}))
-      : this.songs.map((song, index) => ({...song, originalIndex: index}));
+    // Get the real index of the current song
+    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
     
-    // Lấy index thật của bài hát đang phát trong mảng songs gốc
+    let songsToRender = [];
+    if (this.isRandom) {
+      // In random mode, we render songs in the order specified by randomOrder
+      songsToRender = this.randomOrder.map(index => ({
+        ...this.songs[index], 
+        originalIndex: index
+      }));
+    } else {
+      // In normal mode, we render songs in their original order
+      songsToRender = this.songs.map((song, index) => ({
+        ...song, 
+        originalIndex: index
+      }));
+    }
     
     const htmls = songsToRender.map((song, index) => {
-      // Trong chế độ random, chúng ta cần xác định index thật của bài hát
-      const originalIndex = this.isRandom ? this.randomOrder[index] : index;
+      // Get the original index of this song in the songs array
+      const originalIndex = song.originalIndex;
       
-      // Kiểm tra xem đây có phải là bài hát đang phát hay không
-      let isActive = false;
-      if (this.isRandom) {
-        isActive = this.randomOrder[this.currentIndex] === originalIndex;
-      } else {
-        isActive = index === this.currentIndex;
-      }
-        
+      // A song is active if its original index matches the real index of the current song
+      const isActive = originalIndex === currentSongRealIndex;
+      
       return `                
       <li class="song-item ${isActive ? "active" : ""}" data-index="${originalIndex}">
         <img src="${song.image}" alt="${song.name}">
@@ -133,8 +140,10 @@ const app = {
         </div>
       </li>`;
     });
+    
     $(".song-list").innerHTML = htmls.join("\n");
-
+  
+    // Add click handlers to song items
     const songItems = $$(".song-item");
     songItems.forEach((item) => {
       item.onclick = () => {
@@ -153,8 +162,6 @@ const app = {
     });
   },
 
-
-  //update playpause icon
   updatePlayBtnIcon: function () {
     if (audio.paused) {
       playerBtn.classList.remove("fa-pause");
@@ -190,13 +197,18 @@ const app = {
   },
   handleEvents: function () {
     audio.addEventListener("play", function () {
+      artCover.classList.remove("small");
       playBtn.classList.remove("play");
       playBtn.classList.add("pause");
     });
+    
     audio.addEventListener("pause", function () {
+      artCover.classList.add("small");
+      
       playBtn.classList.remove("pause");
       playBtn.classList.add("play");
     });
+    
     audio.addEventListener("play", function () {
       playerBtn.classList.remove("fa-play");
       playerBtn.classList.add("fa-pause");
@@ -205,6 +217,22 @@ const app = {
       playerBtn.classList.remove("fa-pause");
       playerBtn.classList.add("fa-play");
     });
+    
+    //Spacebar key event listener for the whole document to play pause the song
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+          return;
+        }
+        if (audio.paused) {
+          audio.play();
+        } else {
+          audio.pause();
+        }
+      }
+    });
+
     playBtn.onclick = () => {
       if (audio.paused) {
         audio.play();
@@ -239,20 +267,40 @@ const app = {
       playerBtn.classList.add("fa-pause");
     };
     shuffleBtn.onclick = () => {
+      // Store the real index of the currently playing song before changing modes
+      const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
+      
+      // Toggle shuffle state
       this.isRandom = !this.isRandom;
       shuffleBtn.classList.toggle("active");
       
       if (this.isRandom) {
-        // When enabling shuffle, preserve the current playing song
-        this.shuffleSongs();
+        // Create randomOrder array first
+        this.randomOrder = Array.from({ length: this.songs.length }, (_, i) => i);
+        
+        // Fisher-Yates shuffle
+        for (let i = this.randomOrder.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [this.randomOrder[i], this.randomOrder[j]] = [this.randomOrder[j], this.randomOrder[i]];
+        }
+        
+        // Make sure the current song is properly tracked in shuffle mode
+        this.currentIndex = this.randomOrder.findIndex(index => index === currentSongRealIndex);
+        
+        // Safeguard if findIndex returns -1 (shouldn't happen, but just in case)
+        if (this.currentIndex === -1) {
+          this.currentIndex = 0;
+        }
       } else {
-        // When disabling shuffle, get the real index of the currently playing song
-        const currentPlayingSongIndex = this.randomOrder[this.currentIndex];
-        // Reset to normal mode, setting the current index to match the song that was playing
-        this.currentIndex = currentPlayingSongIndex;
-        this.render();
-        this.highlightActiveSong();
+        // When disabling shuffle, set current index to the real song index
+        this.currentIndex = currentSongRealIndex;
       }
+      
+      // Render the playlist with the updated order
+      this.render();
+      
+      // Make sure to highlight the active song after rendering
+      this.highlightActiveSong();
     };
     loopBtn.onclick = () => {
       loopBtn.classList.toggle("active");
