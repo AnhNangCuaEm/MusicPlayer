@@ -1,6 +1,7 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const time = $(".time");
 const songTitle = $(".track-info h2");
 const artistName = $(".track-info p");
 const albumArt = $(".album-art img");
@@ -9,6 +10,8 @@ const audio = $("#audio");
 const playBtn = $("#playPauseBtn");
 const playerBtn = $("#playPauseBtn i");
 const progressBar = $("#progress-slider");
+const totalDuration = $(".total-time");
+const currentTime = $(".current-time");
 const nextBtn = $("#nextBtn");
 const prevBtn = $("#prevBtn");
 const shuffleBtn = $("#shuffleBtn");
@@ -84,22 +87,29 @@ const app = {
       image: "./assets/images/10.jpg",
     },
   ],
-  shuffleSongs: function() {
+  shuffleSongs: function () {
     // Lưu lại index thật của bài hát đang phát trong mảng songs gốc
-    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
-    
+    const currentSongRealIndex = this.isRandom
+      ? this.randomOrder[this.currentIndex]
+      : this.currentIndex;
+
     // Tạo mảng chỉ số cho tất cả bài hát
     this.randomOrder = Array.from({ length: this.songs.length }, (_, i) => i);
-    
+
     // Thuật toán Fisher-Yates để trộn mảng
     for (let i = this.randomOrder.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [this.randomOrder[i], this.randomOrder[j]] = [this.randomOrder[j], this.randomOrder[i]];
+      [this.randomOrder[i], this.randomOrder[j]] = [
+        this.randomOrder[j],
+        this.randomOrder[i],
+      ];
     }
-    
+
     // Tìm vị trí mới của bài hát đang phát trong mảng ngẫu nhiên
-    this.currentIndex = this.randomOrder.findIndex(index => index === currentSongRealIndex);
-    
+    this.currentIndex = this.randomOrder.findIndex(
+      (index) => index === currentSongRealIndex
+    );
+
     // Render lại danh sách bài hát theo thứ tự ngẫu nhiên
     this.render();
     this.highlightActiveSong();
@@ -107,32 +117,36 @@ const app = {
 
   render: function () {
     // Get the real index of the current song
-    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
-    
+    const currentSongRealIndex = this.isRandom
+      ? this.randomOrder[this.currentIndex]
+      : this.currentIndex;
+
     let songsToRender = [];
     if (this.isRandom) {
       // In random mode, we render songs in the order specified by randomOrder
-      songsToRender = this.randomOrder.map(index => ({
-        ...this.songs[index], 
-        originalIndex: index
+      songsToRender = this.randomOrder.map((index) => ({
+        ...this.songs[index],
+        originalIndex: index,
       }));
     } else {
       // In normal mode, we render songs in their original order
       songsToRender = this.songs.map((song, index) => ({
-        ...song, 
-        originalIndex: index
+        ...song,
+        originalIndex: index,
       }));
     }
-    
+
     const htmls = songsToRender.map((song, index) => {
       // Get the original index of this song in the songs array
       const originalIndex = song.originalIndex;
-      
+
       // A song is active if its original index matches the real index of the current song
       const isActive = originalIndex === currentSongRealIndex;
-      
+
       return `                
-      <li class="song-item ${isActive ? "active" : ""}" data-index="${originalIndex}">
+      <li class="song-item ${
+        isActive ? "active" : ""
+      }" data-index="${originalIndex}">
         <img src="${song.image}" alt="${song.name}">
         <div class="song-info">
             <span class="song-name">${song.name}</span>
@@ -140,16 +154,18 @@ const app = {
         </div>
       </li>`;
     });
-    
+
     $(".song-list").innerHTML = htmls.join("\n");
-  
+
     // Add click handlers to song items
     const songItems = $$(".song-item");
     songItems.forEach((item) => {
       item.onclick = () => {
         const songIndex = Number(item.dataset.index);
         if (this.isRandom) {
-          this.currentIndex = this.randomOrder.findIndex(index => index === songIndex);
+          this.currentIndex = this.randomOrder.findIndex(
+            (index) => index === songIndex
+          );
         } else {
           this.currentIndex = songIndex;
         }
@@ -179,8 +195,10 @@ const app = {
     });
 
     // Lấy index thật của bài hát đang phát trong mảng songs gốc
-    const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
-    
+    const currentSongRealIndex = this.isRandom
+      ? this.randomOrder[this.currentIndex]
+      : this.currentIndex;
+
     // Tìm và add active class cho bài hát đang phát trong danh sách hiển thị
     const activeSong = $(`.song-item[data-index="${currentSongRealIndex}"]`);
     if (activeSong) {
@@ -201,14 +219,14 @@ const app = {
       playBtn.classList.remove("play");
       playBtn.classList.add("pause");
     });
-    
+
     audio.addEventListener("pause", function () {
       artCover.classList.add("small");
-      
+
       playBtn.classList.remove("pause");
       playBtn.classList.add("play");
     });
-    
+
     audio.addEventListener("play", function () {
       playerBtn.classList.remove("fa-play");
       playerBtn.classList.add("fa-pause");
@@ -217,7 +235,7 @@ const app = {
       playerBtn.classList.remove("fa-pause");
       playerBtn.classList.add("fa-play");
     });
-    
+
     //Spacebar key event listener for the whole document to play pause the song
     document.addEventListener("keydown", (e) => {
       if (e.code === "Space" || e.key === " ") {
@@ -246,8 +264,14 @@ const app = {
     };
     audio.ontimeupdate = () => {
       if (audio.duration) {
-        const progressPercent = (audio.currentTime / audio.duration) * 100;
+        const currentSeconds = audio.currentTime;
+        const progressPercent = (currentSeconds / audio.duration) * 100;
         progressBar.value = progressPercent;
+        const currentMinutes = Math.floor(currentSeconds / 60);
+        const formattedSeconds = Math.floor(currentSeconds % 60);
+        currentTime.textContent = `${currentMinutes}:${
+          formattedSeconds < 10 ? "0" : ""
+        }${formattedSeconds}`;
       }
     };
     progressBar.onchange = (e) => {
@@ -268,25 +292,34 @@ const app = {
     };
     shuffleBtn.onclick = () => {
       // Store the real index of the currently playing song before changing modes
-      const currentSongRealIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
-      
+      const currentSongRealIndex = this.isRandom
+        ? this.randomOrder[this.currentIndex]
+        : this.currentIndex;
+
       // Toggle shuffle state
       this.isRandom = !this.isRandom;
       shuffleBtn.classList.toggle("active");
-      
+
       if (this.isRandom) {
         // Create randomOrder array first
-        this.randomOrder = Array.from({ length: this.songs.length }, (_, i) => i);
-        
+        this.randomOrder = Array.from(
+          { length: this.songs.length },
+          (_, i) => i
+        );
+
         // Fisher-Yates shuffle
         for (let i = this.randomOrder.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [this.randomOrder[i], this.randomOrder[j]] = [this.randomOrder[j], this.randomOrder[i]];
+          [this.randomOrder[i], this.randomOrder[j]] = [
+            this.randomOrder[j],
+            this.randomOrder[i],
+          ];
         }
-        
         // Make sure the current song is properly tracked in shuffle mode
-        this.currentIndex = this.randomOrder.findIndex(index => index === currentSongRealIndex);
-        
+        this.currentIndex = this.randomOrder.findIndex(
+          (index) => index === currentSongRealIndex
+        );
+
         // Safeguard if findIndex returns -1 (shouldn't happen, but just in case)
         if (this.currentIndex === -1) {
           this.currentIndex = 0;
@@ -295,10 +328,10 @@ const app = {
         // When disabling shuffle, set current index to the real song index
         this.currentIndex = currentSongRealIndex;
       }
-      
+
       // Render the playlist with the updated order
       this.render();
-      
+
       // Make sure to highlight the active song after rendering
       this.highlightActiveSong();
     };
@@ -324,12 +357,32 @@ const app = {
       audio.volume = e.target.value / 100;
       this.updateVolumeIcon(e.target.value);
     };
+
+    audio.addEventListener("loadedmetadata", () => {
+      const minutes = Math.floor(audio.duration / 60);
+      const seconds = Math.floor(audio.duration % 60);
+      totalDuration.textContent = `${minutes}:${
+        seconds < 10 ? "0" : ""
+      }${seconds}`;
+    });
+
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        const progressPercent = (audio.currentTime / audio.duration) * 100;
+        progressBar.value = progressPercent;
+        const currentMinutes = Math.floor(audio.currentTime / 60);
+        const currentSeconds = Math.floor(audio.currentTime % 60);
+        currentTime.textContent = `${currentMinutes}:${
+          currentSeconds < 10 ? "0" : ""
+        }${currentSeconds}`;
+      }
+    };
   },
-  
-  updateVolumeIcon: function(volumeLevel) {
+
+  updateVolumeIcon: function (volumeLevel) {
     const volumeLowIcon = $(".volume-bar i:first-child");
     const volumeHighIcon = $(".volume-bar .fa-volume-high");
-    
+
     if (volumeLevel == 0) {
       volumeLowIcon.className = "fas fa-volume-off";
       volumeHighIcon.style.opacity = "0.5";
@@ -345,7 +398,6 @@ const app = {
     } else {
       volumeLowIcon.className = "fas fa-volume-low";
       volumeHighIcon.style.opacity = "1";
-      // Clear any animation unless at 100%
       volumeLowIcon.style.animation = "";
     }
 
@@ -357,31 +409,31 @@ const app = {
     }
   },
 
-  applyColorPalette: function() {
+  applyColorPalette: function () {
     // Make sure the image is loaded before trying to get colors
     if (!albumArt.complete) {
       albumArt.onload = () => this.extractAndApplyColors();
       return;
     }
-    
+
     this.extractAndApplyColors();
   },
-  
-  extractAndApplyColors: function() {
+
+  extractAndApplyColors: function () {
     const colorThief = new ColorThief();
     try {
       // Get color palette (returns an array of [r,g,b] colors)
       const palette = colorThief.getPalette(albumArt, 3);
-      
+
       if (palette && palette.length >= 2) {
         // Convert RGB arrays to CSS format
         const color1 = `rgb(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]})`;
         const color2 = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
         const darkColor = `rgba(128, 128, 128, 0.9)`;
-        
+
         // Apply the gradient to phone-container instead of player-container
         phoneContainer.style.background = `linear-gradient(120deg, ${color1}, ${darkColor})`;
-        
+
         // Add a transition effect
         phoneContainer.style.transition = "background 0.8s ease";
       }
@@ -391,39 +443,51 @@ const app = {
       phoneContainer.style.background = "#000";
     }
   },
-
+  updateTime: function () {
+    var d = new Date();
+    var m = d.getMinutes();
+    var h = d.getHours();
+    time.textContent =
+      ("0" + h).substr(-2) +
+      ":" +
+      ("0" + m).substr(-2);
+    setInterval(this.updateTime, 1000);
+  },
   loadCurrentSong: function () {
-    const songIndex = this.isRandom ? this.randomOrder[this.currentIndex] : this.currentIndex;
+    const songIndex = this.isRandom
+      ? this.randomOrder[this.currentIndex]
+      : this.currentIndex;
     const song = this.songs[songIndex];
     songTitle.textContent = song.name;
     artistName.textContent = song.artist;
     albumArt.src = song.image;
     audio.src = song.path;
     this.applyColorPalette();
-    
+
+    // Reset the duration display until metadata is loaded
+    totalDuration.textContent = "0:00";
+
     // Add Media Session API support for OS media controls
-    if ('mediaSession' in navigator) {
+    if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: song.name,
         artist: song.artist,
-        album: 'Music Player',
-        artwork: [
-          { src: song.image, sizes: '512x512', type: 'image/jpeg' }
-        ]
+        album: "Music Player",
+        artwork: [{ src: song.image, sizes: "512x512", type: "image/jpeg" }],
       });
-      
+
       // Add media session action handlers
-      navigator.mediaSession.setActionHandler('play', () => {
+      navigator.mediaSession.setActionHandler("play", () => {
         audio.play();
       });
-      navigator.mediaSession.setActionHandler('pause', () => {
+      navigator.mediaSession.setActionHandler("pause", () => {
         audio.pause();
       });
-      navigator.mediaSession.setActionHandler('previoustrack', () => {
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
         this.prevSong();
         audio.play();
       });
-      navigator.mediaSession.setActionHandler('nexttrack', () => {
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
         this.nextSong();
         audio.play();
       });
@@ -465,6 +529,7 @@ const app = {
     this.defineProperties();
     this.handleEvents();
     this.loadCurrentSong();
+    this.updateTime();
     this.render();
     this.highlightActiveSong();
     audio.volume = volumeSlider.value / 100;
