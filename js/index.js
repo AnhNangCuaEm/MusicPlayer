@@ -18,6 +18,7 @@ const shuffleBtn = $("#shuffleBtn");
 const loopBtn = $("#loopBtn");
 const phoneContainer = $(".phone-container");
 const volumeSlider = $("#volumeSlider");
+const currentLyrics = [];
 
 const app = {
   currentIndex: 0,
@@ -272,6 +273,7 @@ const app = {
         currentTime.textContent = `${currentMinutes}:${
           formattedSeconds < 10 ? "0" : ""
         }${formattedSeconds}`;
+        updateActiveLyric(audio.currentTime);
       }
     };
     progressBar.onchange = (e) => {
@@ -375,6 +377,7 @@ const app = {
         currentTime.textContent = `${currentMinutes}:${
           currentSeconds < 10 ? "0" : ""
         }${currentSeconds}`;
+        updateActiveLyric(audio.currentTime);
       }
     };
   },
@@ -492,6 +495,9 @@ const app = {
         audio.play();
       });
     }
+
+    // Load lyrics for the current song
+    loadLyrics(song.path.split('/').pop());
   },
   nextSong: function () {
     this.currentIndex++;
@@ -538,3 +544,97 @@ const app = {
 };
 
 app.start();
+
+let activeLyricIndex = -1;
+
+async function loadLyrics(songFilename) {
+    try {
+        const response = await fetch('./assets/lyrics.json');
+        const data = await response.json();
+        
+        // Find lyrics for current song
+        const songLyrics = data.Lyrics.find(item => Object.keys(item)[0] === songFilename);
+        
+        if (songLyrics) {
+            currentLyrics.length = 0; // Clear the array properly
+            currentLyrics.push(...songLyrics[songFilename]); // Use spread operator to add all elements
+            renderLyrics();
+        } else {
+            document.querySelector('.lyric-text').innerHTML = '<p class="no-lyrics">No lyrics available for this song.</p>';
+            currentLyrics.length = 0; // Clear the array
+        }
+    } catch (error) {
+        console.error('Error loading lyrics:', error);
+        document.querySelector('.lyric-text').innerHTML = '<p class="no-lyrics">Error loading lyrics.</p>';
+    }
+}
+
+function renderLyrics() {
+    const lyricsContainer = document.querySelector('.lyric-text');
+    lyricsContainer.innerHTML = '';
+    
+    if (currentLyrics.length === 0) {
+        lyricsContainer.innerHTML = '<p class="no-lyrics">No lyrics available for this song.</p>';
+        return;
+    }
+    
+    currentLyrics.forEach((line, index) => {
+        const lyricLine = document.createElement('p');
+        lyricLine.className = 'lyric-line';
+        lyricLine.setAttribute('data-time', line.time);
+        lyricLine.setAttribute('data-index', index);
+        lyricLine.textContent = line.text;
+        lyricsContainer.appendChild(lyricLine);
+    });
+}
+
+function updateActiveLyric(currentTime) {
+    if (currentLyrics.length === 0) return;
+    
+    // Convert to milliseconds to match JSON time format
+    const timeMs = currentTime * 1000;
+    
+    // Find the current lyric
+    let newActiveIndex = -1;
+    
+    for (let i = currentLyrics.length - 1; i >= 0; i--) {
+        if (timeMs >= currentLyrics[i].time) {
+            newActiveIndex = i;
+            break;
+        }
+    }
+    
+    // Only update if changed
+    if (newActiveIndex !== activeLyricIndex) {
+        // Remove active class from previous lyric
+        const prevActive = document.querySelector('.lyric-line.active');
+        if (prevActive) {
+            prevActive.classList.remove('active');
+        }
+        
+        activeLyricIndex = newActiveIndex;
+        
+        // Add active class to current lyric
+        if (activeLyricIndex >= 0) {
+            const currentLine = document.querySelector(`.lyric-line[data-index="${activeLyricIndex}"]`);
+            if (currentLine) {
+                currentLine.classList.add('active');
+                
+                // Only scroll if the lyric panel is actually visible
+                const lyricPanel = document.querySelector('.lyric-panel');
+                if (lyricPanel && lyricPanel.classList.contains('active')) {
+                    // Get the content container
+                    const lyricContent = document.querySelector('.lyric-content');
+                    if (lyricContent) {
+                        // Use scrollTop instead of scrollIntoView for more controlled scrolling
+                        const lineTop = currentLine.offsetTop - lyricContent.offsetTop;
+                        const contentHeight = lyricContent.clientHeight;
+                        
+                        // Scroll so that the active line is positioned at 40% of the container height
+                        lyricContent.scrollTop = lineTop - (contentHeight * 0.4);
+                    }
+                }
+            }
+        }
+    }
+}
