@@ -71,8 +71,8 @@ const app = {
       image: "./assets/images/7.jpg",
     },
     {
-      name: "Échame La Culpa",
-      artist: "Luis Fonsi & Demi Lovato",
+      name: "abcdefu",
+      artist: "GAYLE",
       path: "./assets/music/8.mp3",
       image: "./assets/images/8.jpg",
     },
@@ -435,18 +435,44 @@ const app = {
         const color2 = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
         const darkColor = `rgba(128, 128, 128, 0.9)`;
 
-        // Apply the gradient to phone-container instead of player-container
+        // Apply the gradient to phone-container
         phoneContainer.style.background = `linear-gradient(120deg, ${color1}, ${darkColor})`;
+        
+        // Create darker versions for panels (reducing brightness by multiplying RGB values by 0.7)
+        const darkerColor1 = `rgba(${Math.floor(palette[0][0] * 0.7)}, ${Math.floor(palette[0][1] * 0.7)}, ${Math.floor(palette[0][2] * 0.7)}, 0.95)`;
+        const darkerColor2 = `rgba(${Math.floor(palette[1][0] * 0.7)}, ${Math.floor(palette[1][1] * 0.7)}, ${Math.floor(palette[1][2] * 0.7)}, 0.95)`;
+        
+        // Apply to playlist and lyric panels
+        const playlistPanel = document.querySelector(".playlist-panel");
+        const lyricPanel = document.querySelector(".lyric-panel");
+        
+        if (playlistPanel) {
+          playlistPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.95))`;
+          playlistPanel.style.transition = "background 0.8s ease, transform 0.3s ease-in-out";
+        }
+        
+        if (lyricPanel) {
+          lyricPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.95))`;
+          lyricPanel.style.transition = "background 0.8s ease, transform 0.3s ease-in-out";
+        }
 
-        // Add a transition effect
+        // Add a transition effect for the phone container
         phoneContainer.style.transition = "background 0.8s ease";
       }
     } catch (error) {
       console.error("Error extracting colors:", error);
       // Fallback to default background
       phoneContainer.style.background = "#000";
+      
+      // Reset panel backgrounds as well in case of error
+      const playlistPanel = document.querySelector(".playlist-panel");
+      const lyricPanel = document.querySelector(".lyric-panel");
+      
+      if (playlistPanel) playlistPanel.style.background = "#000000ee";
+      if (lyricPanel) lyricPanel.style.background = "#000000ee";
     }
   },
+
   updateTime: function () {
     var d = new Date();
     var m = d.getMinutes();
