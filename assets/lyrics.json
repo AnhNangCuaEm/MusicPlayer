@@ -75,19 +75,19 @@
                     "text": "Despacito"
                 },
                 {
-                    "time": 64000,
+                    "time": 63000,
                     "text": "Quiero respirar tu cuello despacito"
                 },
                 {
-                    "time": 67000,
+                    "time": 66000,
                     "text": "Deja que te diga cosas al oído"
                 },
                 {
-                    "time": 70000,
+                    "time": 69000,
                     "text": "Para que te acuerdes si no estás conmigo"
                 },
                 {
-                    "time": 73000,
+                    "time": 72000,
                     "text": "Despacito"
                 },
                 {
@@ -99,43 +99,43 @@
                     "text": "Firmo en las paredes de tu laberinto"
                 },
                 {
-                    "time": 80000,
+                    "time": 81000,
                     "text": "Y hacer de tu cuerpo todo un manuscrito"
                 },
                 {
-                    "time": 83000,
+                    "time": 82000,
                     "text": "(Sube, sube, sube"
                 },
                 {
-                    "time": 84000,
+                    "time": 83000,
                     "text": "Sube, sube)"
                 },
                 {
-                    "time": 85000,
+                    "time": 84000,
                     "text": "Quiero ver bailar tu pelo"
                 },
                 {
-                    "time": 87000,
+                    "time": 86000,
                     "text": "Quiero ser tu ritmo"
                 },
                 {
-                    "time": 89000,
+                    "time": 88000,
                     "text": "Que le enseñes a mi boca"
                 },
                 {
-                    "time": 92000, 
+                    "time": 91000, 
                     "text": "Tus lugares favoritos"
                 },
                 {
-                    "time": 96000,
+                    "time": 95000,
                     "text": "Déjame sobrepasar tus zonas de peligro"
                 },
                 {
-                    "time": 100000,
+                    "time": 99000,
                     "text": "Hasta provocar tus gritos"
                 },
                 {
-                    "time": 103000,
+                    "time": 102000,
                     "text": "Y que olvides tu apellido"
                 },
                 {
@@ -147,7 +147,7 @@
                     "text": "Yo sé que estás pensándolo"
                 },
                 {
-                    "time": 109000,
+                    "time": 108000,
                     "text": "Llevo tiempo intentándolo"
                 },
                 {
@@ -329,6 +329,10 @@
                 {
                     "time": 224000,
                     "text": "Y que olvides tu apellido (D.Y)"
+                },
+                {
+                    "time": 225000,
+                    "text": "Despacito"
                 }
             ]
         },
