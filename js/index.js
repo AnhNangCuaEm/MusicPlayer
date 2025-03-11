@@ -25,8 +25,8 @@ const app = {
   isRandom: false,
   isRepeat: false,
   randomOrder: [],
-  currentLyrics: [], // Moving this array into the app object
-  activeLyricIndex: -1, // Moving this variable into the app object
+  currentLyrics: [],
+  activeLyricIndex: -1,
   songs: [
     {
       name: "Despacito ft. Justin Bieber",
@@ -90,15 +90,15 @@ const app = {
     },
   ],
   shuffleSongs: function () {
-    // Lưu lại index thật của bài hát đang phát trong mảng songs gốc
+    //Save the current song index before shuffling
     const currentSongRealIndex = this.isRandom
       ? this.randomOrder[this.currentIndex]
       : this.currentIndex;
 
-    // Tạo mảng chỉ số cho tất cả bài hát
+    //Create an array of indexes from 0 to songs.length
     this.randomOrder = Array.from({ length: this.songs.length }, (_, i) => i);
 
-    // Thuật toán Fisher-Yates để trộn mảng
+    //Fisher-Yates shuffle
     for (let i = this.randomOrder.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [this.randomOrder[i], this.randomOrder[j]] = [
@@ -107,12 +107,10 @@ const app = {
       ];
     }
 
-    // Tìm vị trí mới của bài hát đang phát trong mảng ngẫu nhiên
     this.currentIndex = this.randomOrder.findIndex(
       (index) => index === currentSongRealIndex
     );
 
-    // Render lại danh sách bài hát theo thứ tự ngẫu nhiên
     this.render();
     this.highlightActiveSong();
   },
@@ -159,7 +157,6 @@ const app = {
 
     $(".song-list").innerHTML = htmls.join("\n");
 
-    // Add click handlers to song items
     const songItems = $$(".song-item");
     songItems.forEach((item) => {
       item.onclick = () => {
@@ -196,12 +193,10 @@ const app = {
       item.classList.remove("active");
     });
 
-    // Lấy index thật của bài hát đang phát trong mảng songs gốc
     const currentSongRealIndex = this.isRandom
       ? this.randomOrder[this.currentIndex]
       : this.currentIndex;
 
-    // Tìm và add active class cho bài hát đang phát trong danh sách hiển thị
     const activeSong = $(`.song-item[data-index="${currentSongRealIndex}"]`);
     if (activeSong) {
       activeSong.classList.add("active");
@@ -294,7 +289,6 @@ const app = {
       playerBtn.classList.add("fa-pause");
     };
     shuffleBtn.onclick = () => {
-      // Store the real index of the currently playing song before changing modes
       const currentSongRealIndex = this.isRandom
         ? this.randomOrder[this.currentIndex]
         : this.currentIndex;
@@ -304,7 +298,6 @@ const app = {
       shuffleBtn.classList.toggle("active");
 
       if (this.isRandom) {
-        // Create randomOrder array first
         this.randomOrder = Array.from(
           { length: this.songs.length },
           (_, i) => i
@@ -318,7 +311,6 @@ const app = {
             this.randomOrder[i],
           ];
         }
-        // Make sure the current song is properly tracked in shuffle mode
         this.currentIndex = this.randomOrder.findIndex(
           (index) => index === currentSongRealIndex
         );
@@ -332,10 +324,7 @@ const app = {
         this.currentIndex = currentSongRealIndex;
       }
 
-      // Render the playlist with the updated order
       this.render();
-
-      // Make sure to highlight the active song after rendering
       this.highlightActiveSong();
     };
     loopBtn.onclick = () => {
@@ -438,25 +427,24 @@ const app = {
         // Apply the gradient to phone-container
         phoneContainer.style.background = `linear-gradient(120deg, ${color1}, ${darkColor})`;
         
-        // Create darker versions for panels (reducing brightness by multiplying RGB values by 0.7)
-        const darkerColor1 = `rgba(${Math.floor(palette[0][0] * 0.7)}, ${Math.floor(palette[0][1] * 0.7)}, ${Math.floor(palette[0][2] * 0.7)}, 0.95)`;
-        const darkerColor2 = `rgba(${Math.floor(palette[1][0] * 0.7)}, ${Math.floor(palette[1][1] * 0.7)}, ${Math.floor(palette[1][2] * 0.7)}, 0.95)`;
+        // Create darker versions for panels
+        const darkerColor1 = `rgba(${Math.floor(palette[0][0] * 0.7)}, ${Math.floor(palette[0][1] * 0.7)}, ${Math.floor(palette[0][2] * 0.7)}, 0.97)`;
+        const darkerColor2 = `rgba(${Math.floor(palette[1][0] * 0.7)}, ${Math.floor(palette[1][1] * 0.7)}, ${Math.floor(palette[1][2] * 0.7)}, 0.97)`;
         
         // Apply to playlist and lyric panels
         const playlistPanel = document.querySelector(".playlist-panel");
         const lyricPanel = document.querySelector(".lyric-panel");
         
         if (playlistPanel) {
-          playlistPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.95))`;
+          playlistPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.97))`;
           playlistPanel.style.transition = "background 0.8s ease, transform 0.3s ease-in-out";
         }
         
         if (lyricPanel) {
-          lyricPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.95))`;
+          lyricPanel.style.background = `linear-gradient(120deg, ${darkerColor1}, rgba(0, 0, 0, 0.97))`;
           lyricPanel.style.transition = "background 0.8s ease, transform 0.3s ease-in-out";
         }
 
-        // Add a transition effect for the phone container
         phoneContainer.style.transition = "background 0.8s ease";
       }
     } catch (error) {
@@ -526,12 +514,10 @@ const app = {
   nextSong: function () {
     this.currentIndex++;
     if (this.isRandom) {
-      // Nếu ở chế độ ngẫu nhiên, reset về đầu danh sách random
       if (this.currentIndex >= this.randomOrder.length) {
         this.currentIndex = 0;
       }
     } else {
-      // Chế độ bình thường
       if (this.currentIndex >= this.songs.length) {
         this.currentIndex = 0;
       }
@@ -542,12 +528,10 @@ const app = {
   prevSong: function () {
     this.currentIndex--;
     if (this.isRandom) {
-      // Nếu ở chế độ ngẫu nhiên, quay lại cuối danh sách random
       if (this.currentIndex < 0) {
         this.currentIndex = this.randomOrder.length - 1;
       }
     } else {
-      // Chế độ bình thường
       if (this.currentIndex < 0) {
         this.currentIndex = this.songs.length - 1;
       }
@@ -606,7 +590,6 @@ const app = {
 
     const timeMs = currentTime * 1000;
 
-    // Find the current lyric
     let newActiveIndex = -1;
 
     for (let i = this.currentLyrics.length - 1; i >= 0; i--) {
